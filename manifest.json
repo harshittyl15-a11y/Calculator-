@@ -1,0 +1,11 @@
+{
+  "name": "My Calculator",
+  "short_name": "Calculator",
+  "description": "My personal calculator app",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#15151f",
+  "theme_color": "#252535"
+}
