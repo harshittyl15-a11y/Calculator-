@@ -1,54 +1,567 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Calculator</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#252535">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101827">
+<title>My Calculator</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 15px;
+  background: #101827;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+.container {
+  max-width: 480px;
+  margin: 15px auto;
+  background: #1c293b;
+  padding: 18px;
+  border-radius: 20px;
+}
+
+h1 {
+  text-align: center;
+  color: #60a5fa;
+}
+
+.subtitle {
+  text-align: center;
+  color: #aebbd0;
+  font-size: 13px;
+}
+
+.tabs {
+  display: flex;
+  gap: 6px;
+  margin: 20px 0;
+}
+
+.tab {
+  flex: 1;
+  padding: 12px 4px;
+  border: none;
+  border-radius: 10px;
+  background: #334155;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.tab.active {
+  background: #2563eb;
+}
+
+.panel {
+  display: none;
+}
+
+.panel.active {
+  display: block;
+}
+
+.display {
+  width: 100%;
+  min-height: 105px;
+  background: #0b1220;
+  color: white;
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 12px;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+#expression {
+  font-size: 19px;
+  color: #aebbd0;
+  min-height: 25px;
+}
+
+#result {
+  font-size: 32px;
+  color: #60a5fa;
+  margin-top: 10px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 9px;
+}
+
+.key {
+  min-height: 53px;
+  border: none;
+  border-radius: 11px;
+  background: #334155;
+  color: white;
+  font-size: 19px;
+  font-weight: bold;
+}
+
+.key:active, .tab:active, .calculate:active {
+  opacity: 0.7;
+}
+
+.operator, .tab.active {
+  background: #2563eb;
+}
+
+.science {
+  background: #475569;
+  font-size: 15px;
+}
+
+.danger {
+  background: #dc4545;
+}
+
+.equal {
+  background: #059669;
+}
+
+.field {
+  margin: 18px 0;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  color: #cbd5e1;
+}
+
+input, select {
+  width: 100%;
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid #475569;
+  background: #0b1220;
+  color: white;
+  font-size: 18px;
+}
+
+.calculate {
+  width: 100%;
+  padding: 15px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 17px;
+  font-weight: bold;
+  margin-top: 12px;
+}
+
+.output {
+  background: #0b1220;
+  padding: 16px;
+  margin-top: 18px;
+  border-radius: 12px;
+  line-height: 2;
+  overflow-wrap: anywhere;
+}
+
+.output strong {
+  color: #60a5fa;
+}
+
+footer {
+  text-align: center;
+  margin-top: 25px;
+  color: #94a3b8;
+  font-size: 12px;
+}
+</style>
 </head>
+
 <body>
 
-    <div class="calculator">
-        <h2>My Calculator</h2>
-        <input type="text" id="display" readonly>
+<div class="container">
 
-        <div class="buttons">
-            <button onclick="clearDisplay()">AC</button>
-            <button onclick="deleteLast()">DEL</button>
-            <button onclick="appendValue('%')">%</button>
-            <button onclick="appendValue('/')">÷</button>
+<h1>🧮 My Calculator</h1>
+<p class="subtitle">Smart Calculator – All in One</p>
 
-            <button onclick="appendValue('7')">7</button>
-            <button onclick="appendValue('8')">8</button>
-            <button onclick="appendValue('9')">9</button>
-            <button onclick="appendValue('*')">×</button>
+<div class="tabs">
+  <button class="tab active" data-panel="standard">
+    Scientific
+  </button>
+  <button class="tab" data-panel="gst">
+    GST
+  </button>
+  <button class="tab" data-panel="discount">
+    Discount
+  </button>
+</div>
 
-            <button onclick="appendValue('4')">4</button>
-            <button onclick="appendValue('5')">5</button>
-            <button onclick="appendValue('6')">6</button>
-            <button onclick="appendValue('-')">−</button>
+<!-- SCIENTIFIC CALCULATOR -->
 
-            <button onclick="appendValue('1')">1</button>
-            <button onclick="appendValue('2')">2</button>
-            <button onclick="appendValue('3')">3</button>
-            <button onclick="appendValue('+')">+</button>
+<section class="panel active" id="standard">
 
-            <button onclick="appendValue('0')">0</button>
-            <button onclick="appendValue('.')">.</button>
-            <button onclick="calculate()" class="equal">=</button>
-        </div>
-    </div>
+<div class="display">
+  <div id="expression">0</div>
+  <div id="result">0</div>
+</div>
 
-    <script src="script.js"></script>
+<div class="grid">
 
-    <script>
-        if ("serviceWorker" in navigator) {
-            window.addEventListener("load", () => {
-                navigator.serviceWorker.register("./sw.js");
-            });
-        }
-    </script>
+<button class="key science" data-insert="sin(">sin</button>
+<button class="key science" data-insert="cos(">cos</button>
+<button class="key science" data-insert="tan(">tan</button>
+<button class="key science" data-insert="sqrt(">√</button>
+
+<button class="key science" data-insert="log(">log</button>
+<button class="key science" data-insert="ln(">ln</button>
+<button class="key science" data-insert="pi">π</button>
+<button class="key science" data-insert="^2">x²</button>
+
+<button class="key science" data-insert="^">xʸ</button>
+<button class="key science" data-insert="(">(</button>
+<button class="key science" data-insert=")">)</button>
+<button class="key danger" data-action="clear">AC</button>
+
+<button class="key" data-insert="7">7</button>
+<button class="key" data-insert="8">8</button>
+<button class="key" data-insert="9">9</button>
+<button class="key operator" data-insert="/">÷</button>
+
+<button class="key" data-insert="4">4</button>
+<button class="key" data-insert="5">5</button>
+<button class="key" data-insert="6">6</button>
+<button class="key operator" data-insert="*">×</button>
+
+<button class="key" data-insert="1">1</button>
+<button class="key" data-insert="2">2</button>
+<button class="key" data-insert="3">3</button>
+<button class="key operator" data-insert="-">−</button>
+
+<button class="key" data-insert="0">0</button>
+<button class="key" data-insert=".">.</button>
+<button class="key" data-action="delete">DEL</button>
+<button class="key operator" data-insert="+">+</button>
+
+<button class="key science" data-action="degree">DEG</button>
+<button class="key science" data-insert="e">e</button>
+<button class="key science" data-insert="/100">%</button>
+<button class="key equal" data-action="equals">=</button>
+
+</div>
+</section>
+
+<!-- GST CALCULATOR -->
+
+<section class="panel" id="gst">
+
+<h2>GST Calculator</h2>
+<p class="subtitle">Calculate GST and final price</p>
+
+<div class="field">
+<label>Original Amount (₹)</label>
+<input type="number" id="gstAmount"
+placeholder="Enter amount" min="0" step="any">
+</div>
+
+<div class="field">
+<label>GST Rate</label>
+<select id="gstRate">
+<option value="5">5%</option>
+<option value="12">12%</option>
+<option value="18" selected>18%</option>
+<option value="28">28%</option>
+</select>
+</div>
+
+<button class="calculate" id="gstCalculate">
+Calculate GST
+</button>
+
+<div class="output" id="gstOutput" aria-live="polite">
+Your GST result will appear here.
+</div>
+
+</section>
+
+<!-- DISCOUNT CALCULATOR -->
+
+<section class="panel" id="discount">
+
+<h2>Discount Calculator</h2>
+<p class="subtitle">Find your savings and final price</p>
+
+<div class="field">
+<label>Original Price (₹)</label>
+<input type="number" id="originalPrice"
+placeholder="Enter original price" min="0" step="any">
+</div>
+
+<div class="field">
+<label>Discount Percentage (%)</label>
+<input type="number" id="discountRate"
+placeholder="Enter discount" min="0" max="100" step="any">
+</div>
+
+<button class="calculate" id="discountCalculate">
+Calculate Discount
+</button>
+
+<div class="output" id="discountOutput" aria-live="polite">
+Your discount result will appear here.
+</div>
+
+</section>
+
+<footer>
+My Calculator © 2026
+</footer>
+
+</div>
+
+<script>
+let expression = "";
+let degrees = true;
+
+const expressionBox =
+document.getElementById("expression");
+
+const resultBox =
+document.getElementById("result");
+
+function updateDisplay() {
+  expressionBox.textContent = expression || "0";
+}
+
+function insertValue(value) {
+  expression += value;
+  updateDisplay();
+}
+
+function clearCalculator() {
+  expression = "";
+  resultBox.textContent = "0";
+  updateDisplay();
+}
+
+function deleteValue() {
+  expression = expression.slice(0, -1);
+  updateDisplay();
+}
+
+// Scientific calculator
+function calculateExpression() {
+  if (!expression.trim()) return;
+
+  try {
+    let code = expression;
+
+    code = code.replace(/\bpi\b/g, "Math.PI");
+    code = code.replace(/\be\b/g, "Math.E");
+    code = code.replace(/\^/g, "**");
+
+    const functions = {
+      sin: x => Math.sin(
+        degrees ? x * Math.PI / 180 : x
+      ),
+      cos: x => Math.cos(
+        degrees ? x * Math.PI / 180 : x
+      ),
+      tan: x => Math.tan(
+        degrees ? x * Math.PI / 180 : x
+      ),
+      sqrt: Math.sqrt,
+      log: Math.log10,
+      ln: Math.log
+    };
+
+    code = code.replace(
+      /\b(sin|cos|tan|sqrt|log|ln)\s*\(/g,
+      (match, name) => "functions." + name + "("
+    );
+
+    if (!/^[0-9+\-*/().%\sA-Za-z]*$/.test(code)) {
+      throw new Error("Invalid expression");
+    }
+
+    const names = code.match(/[A-Za-z]+/g) || [];
+    const allowed = [
+      "sin", "cos", "tan",
+      "sqrt", "log", "ln",
+      "functions", "Math", "PI", "E"
+    ];
+
+    if (names.some(name => !allowed.includes(name))) {
+      throw new Error("Invalid function");
+    }
+
+    const answer = Function(
+      "functions",
+      '"use strict"; return (' + code + ');'
+    )(functions);
+
+    if (!Number.isFinite(answer)) {
+      throw new Error("Math error");
+    }
+
+    resultBox.textContent =
+      Number(answer.toPrecision(12)).toString();
+
+    expression = String(answer);
+    updateDisplay();
+
+  } catch (error) {
+    resultBox.textContent = "Invalid calculation";
+  }
+}
+
+// Scientific calculator buttons
+document.querySelectorAll("[data-insert]").forEach(button => {
+  button.addEventListener("click", () => {
+    insertValue(button.dataset.insert);
+  });
+});
+
+document.querySelectorAll("[data-action]").forEach(button => {
+  button.addEventListener("click", () => {
+    const action = button.dataset.action;
+
+    if (action === "clear") clearCalculator();
+    if (action === "delete") deleteValue();
+    if (action === "equals") calculateExpression();
+
+    if (action === "degree") {
+      degrees = !degrees;
+      button.textContent = degrees ? "DEG" : "RAD";
+    }
+  });
+});
+
+// Tabs
+document.querySelectorAll(".tab").forEach(button => {
+  button.addEventListener("click", () => {
+
+    document.querySelectorAll(".tab").forEach(tab => {
+      tab.classList.remove("active");
+    });
+
+    document.querySelectorAll(".panel").forEach(panel => {
+      panel.classList.remove("active");
+    });
+
+    button.classList.add("active");
+
+    document.getElementById(
+      button.dataset.panel
+    ).classList.add("active");
+  });
+});
+
+// GST Calculator
+document.getElementById("gstCalculate")
+.addEventListener("click", () => {
+
+  const amount = Number(
+    document.getElementById("gstAmount").value
+  );
+
+  const rate = Number(
+    document.getElementById("gstRate").value
+  );
+
+  const output = document.getElementById("gstOutput");
+
+  if (
+    document.getElementById("gstAmount").value.trim() === "" ||
+    !Number.isFinite(amount) ||
+    amount <= 0
+  ) {
+    output.textContent = "Please enter a valid amount.";
+    return;
+  }
+
+  const tax = amount * rate / 100;
+  const total = amount + tax;
+
+  output.innerHTML = `
+    Original Amount: ₹${amount.toFixed(2)}<br>
+    GST Rate: ${rate}%<br>
+    GST Amount: <strong>₹${tax.toFixed(2)}</strong><br>
+    Final Amount: <strong>₹${total.toFixed(2)}</strong>
+  `;
+});
+
+// Discount Calculator
+document.getElementById("discountCalculate")
+.addEventListener("click", () => {
+
+  const priceInput =
+    document.getElementById("originalPrice").value;
+
+  const rateInput =
+    document.getElementById("discountRate").value;
+
+  const price = Number(priceInput);
+  const rate = Number(rateInput);
+
+  const output =
+    document.getElementById("discountOutput");
+
+  if (
+    priceInput.trim() === "" ||
+    rateInput.trim() === "" ||
+    !Number.isFinite(price) ||
+    !Number.isFinite(rate) ||
+    price <= 0 ||
+    rate < 0 ||
+    rate > 100
+  ) {
+    output.textContent =
+      "Enter a valid price and discount between 0 and 100.";
+    return;
+  }
+
+  const saving = price * rate / 100;
+  const finalPrice = price - saving;
+
+  output.innerHTML = `
+    Original Price: ₹${price.toFixed(2)}<br>
+    Discount: ${rate}%<br>
+    You Save: <strong>₹${saving.toFixed(2)}</strong><br>
+    Final Price: <strong>₹${finalPrice.toFixed(2)}</strong>
+  `;
+});
+
+// Keyboard support
+document.addEventListener("keydown", event => {
+
+  if (
+    !document.getElementById("standard")
+    .classList.contains("active")
+  ) {
+    return;
+  }
+
+  if (/^[0-9.+\-*/()]$/.test(event.key)) {
+    insertValue(event.key);
+
+  } else if (event.key === "Enter") {
+    event.preventDefault();
+    calculateExpression();
+
+  } else if (event.key === "Backspace") {
+    deleteValue();
+
+  } else if (event.key === "Escape") {
+    clearCalculator();
+  }
+});
+</script>
+
 </body>
-                                                           </html>
+</html>
