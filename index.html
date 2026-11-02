@@ -5,59 +5,30 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#252535">
-<link rel="manifest" href="manifest.json">
 <title>My Smart Calculator</title>
-
 <style>
 *{box-sizing:border-box}
-body{
-  margin:0;padding:18px;
-  font-family:Arial,sans-serif;
-  background:#171725;color:white;
-}
+body{margin:0;padding:18px;font-family:Arial,sans-serif;background:#171725;color:white}
 .container{max-width:450px;margin:auto}
 h1{text-align:center;color:#8e9cff}
 .tabs{display:flex;gap:6px;margin:20px 0}
-.tabs button{
-  flex:1;padding:12px 5px;border:0;border-radius:10px;
-  background:#34344b;color:white;font-weight:bold;
-}
+.tabs button{flex:1;padding:12px 5px;border:0;border-radius:10px;background:#34344b;color:white;font-weight:bold}
 .tabs button.active{background:#6979ff}
-.panel{
-  display:none;background:#252535;padding:16px;
-  border-radius:16px;
-}
+.panel{display:none;background:#252535;padding:16px;border-radius:16px}
 .panel.active{display:block}
-#display{
-  width:100%;height:65px;font-size:27px;text-align:right;
-  padding:12px;border:0;border-radius:10px;
-  background:#11111c;color:white;margin-bottom:12px;
-}
+#display{width:100%;height:65px;font-size:27px;text-align:right;padding:12px;border:0;border-radius:10px;background:#11111c;color:white;margin-bottom:12px}
 .keys{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.keys button{
-  padding:17px 5px;border:0;border-radius:10px;
-  background:#3a3a52;color:white;font-size:18px;
-}
+.keys button{padding:17px 5px;border:0;border-radius:10px;background:#3a3a52;color:white;font-size:18px}
 .keys button.operator{background:#5868d9}
 .keys button.equal{background:#20a879}
 .keys button.clear{background:#d34e64}
-input,select{
-  width:100%;padding:13px;margin:9px 0;
-  border:0;border-radius:9px;font-size:17px;
-}
-.action{
-  width:100%;padding:14px;border:0;border-radius:10px;
-  background:#6979ff;color:white;font-size:17px;
-  font-weight:bold;margin-top:10px;
-}
-.result{
-  background:#171725;padding:15px;border-radius:10px;
-  margin-top:15px;font-size:18px;line-height:1.7;
-}
+.keys button.erase{background:#c17a32}
+input,select{width:100%;padding:13px;margin:9px 0;border:0;border-radius:9px;font-size:17px}
+.action{width:100%;padding:14px;border:0;border-radius:10px;background:#6979ff;color:white;font-size:17px;font-weight:bold;margin-top:10px}
+.result{background:#171725;padding:15px;border-radius:10px;margin-top:15px;font-size:18px;line-height:1.7}
 .small{text-align:center;color:#aaa;font-size:13px}
 </style>
 </head>
-
 <body>
 <div class="container">
 <h1>🧮 My Smart Calculator</h1>
@@ -107,6 +78,8 @@ input,select{
 <button onclick="add('.')">.</button>
 <button class="clear" onclick="clearDisplay()">C</button>
 <button class="equal" onclick="calculate()">=</button>
+
+<button class="erase" style="grid-column:span 4" onclick="eraseLast()">⌫ Erase</button>
 </div>
 
 <button class="action" onclick="toggleAngle()">Angle: <span id="angle">DEG</span></button>
@@ -117,7 +90,6 @@ input,select{
 <h2>GST Calculator</h2>
 <label>Enter price (₹)</label>
 <input id="price" type="number" min="0" placeholder="Enter amount">
-
 <label>Select GST rate</label>
 <select id="gstRate">
 <option value="5">5%</option>
@@ -125,7 +97,6 @@ input,select{
 <option value="18" selected>18%</option>
 <option value="28">28%</option>
 </select>
-
 <button class="action" onclick="calculateGST()">Calculate GST</button>
 <div id="gstResult" class="result">Your result will appear here.</div>
 </section>
@@ -134,10 +105,8 @@ input,select{
 <h2>Discount Calculator</h2>
 <label>Original price (₹)</label>
 <input id="original" type="number" min="0" placeholder="Enter price">
-
 <label>Discount (%)</label>
 <input id="discountRate" type="number" min="0" max="100" placeholder="Enter discount">
-
 <button class="action" onclick="calculateDiscount()">Calculate Discount</button>
 <div id="discountResult" class="result">Your result will appear here.</div>
 </section>
@@ -163,6 +132,11 @@ function clearDisplay(){
   document.getElementById('display').value = '';
 }
 
+function eraseLast(){
+  const display = document.getElementById('display');
+  display.value = display.value.slice(0,-1);
+}
+
 function toggleAngle(){
   isDegree = !isDegree;
   document.getElementById('angle').textContent = isDegree ? 'DEG' : 'RAD';
@@ -181,8 +155,9 @@ function calculate(){
       .replace(/pi/g,'Math.PI')
       .replace(/\be\b/g,'Math.E');
 
-    const allowed = /^[0-9+\-*/().\sA-Za-z]*$/;
-    if(!allowed.test(expression)) throw new Error('Invalid');
+    if(!/^[0-9+\-*/().\sA-Za-z]*$/.test(expression)){
+      throw new Error('Invalid');
+    }
 
     const names = expression.match(/[A-Za-z]+/g) || [];
     const permitted = ['Math','PI','E','sin','cos','tan','sqrt','log','ln'];
